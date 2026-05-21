@@ -155,6 +155,15 @@ img {
 .main-nav a:hover::after {
     width: 100%;
 }
+/* Zmienia kolor tekstu aktywnej strony na zielony */
+.main-nav a.active {
+    color: var(--primary-color); 
+}
+
+/* Wymusza, żeby zielony pasek pod spodem był rozsunięty na stałe */
+.main-nav a.active::after {
+    width: 100%;
+}
 
 .header-icons {
     display: flex;
