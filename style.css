@@ -223,37 +223,135 @@ footer ul {
     max-width: 90%;
 }
 
-/* INDEX: FEATURES */
-.features {
-    padding: 40px 0;
-    background-color: var(--bg-white);
+/* INDEX: HERO SECTION */
+.hero {
+    background-color: #353942; /* Głęboki, granatowo-szary bazowy z grafiki */
+    color: var(--bg-white);
+    padding: 100px 0; /* Zwiększony padding dla odpowiednich proporcji fal */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
-.features .container {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
+/* Lewa, główna zielona fala oddzielająca tekst od grafiki */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 45%; /* Środek z przesunięciem w lewo */
+    transform: translate(-50%, -50%);
+    width: 120vw;
+    height: 160vw; /* Bardzo duży pionowy owal tworzący łagodny łuk */
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    z-index: -4;
 }
 
-.feature-item {
+/* Ciemnoszara fala wchodząca na zieloną (odsłania tylko jej lewy brzeg) */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%; /* Przesunięcie w prawo względem zielonej fali */
+    transform: translate(-50%, -50%);
+    width: 120vw;
+    height: 160vw;
+    background-color: #2b3038; /* Odcień niemal czarny z pierwszego zdjęcia */
+    border-radius: 50%;
+    z-index: -3;
+}
+
+.hero .container {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10; /* Gwarantuje, że zawartość jest nad falami */
 }
 
-.feature-item i {
-    font-size: 30px;
-    color: var(--text-main);
+.hero-content {
+    flex: 1;
+    max-width: 45%;
 }
 
-.feature-item h3 {
-    font-size: 16px;
-    margin-bottom: 4px;
+.hero-content h1 {
+    font-size: 56px; /* Powiększone, cięższe litery wg wzoru */
+    line-height: 1.1;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -1px;
 }
 
-.feature-item p {
-    font-size: 13px;
-    color: var(--text-light);
+/* Kontener obrazka tworzy nowy kontekst stosu dla białego i prawego łuku */
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Biały owal za traktorem */
+.hero-image::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 55%; 
+    transform: translate(-50%, -50%);
+    width: 140%; /* Szerokość proporcjonalna do kontenera zdjęcia */
+    padding-bottom: 140%; /* Trik CSS na zachowanie idealnego okręgu */
+    background-color: #ffffff;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Skrajny, prawy zielony rogalik wystający zza białego tła */
+.hero-image::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 60%; /* Mocniejsze przesunięcie w prawo obok białego */
+    transform: translate(-50%, -50%);
+    width: 140%;
+    padding-bottom: 140%;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    z-index: -2;
+}
+
+.hero-image img {
+    max-width: 110%; /* Skalowanie ciągnika, by mocniej dominował w okręgu */
+    height: auto;
+    position: relative;
+    z-index: 5;
+    transform: scale(1.1);
+    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.4)); /* Cień potęgujący głębię na białym tle */
+}
+
+/* Responsywność dla nowego układu */
+@media (max-width: 992px) {
+    .hero {
+        padding: 60px 0;
+    }
+    .hero .container {
+        flex-direction: column;
+    }
+    .hero-content {
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 80px;
+    }
+    .hero-image {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    /* Obrócenie fal na poziome przy wąskim ekranie */
+    .hero::before { left: 50%; top: 60%; width: 200vw; height: 100vh; }
+    .hero::after { left: 50%; top: 65%; width: 200vw; height: 100vh; }
+    .hero-image::before { left: 50%; width: 120vw; padding-bottom: 120vw; }
+    .hero-image::after { display: none; } /* Redukcja detali na mobile dla czystości */
 }
 
 /* INDEX: BRANDS */
