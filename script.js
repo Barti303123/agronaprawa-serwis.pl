@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-
+    // ==========================================
+    // 0. AKTYWNY LINK W MENU
+    // ==========================================
+    // Pobieramy nazwę pliku, na którym jesteśmy (np. "sklep.html")
+    // Jeśli nazwa jest pusta (jesteśmy na stronie głównej domeny), domyślnie to "index.html"
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html'; 
+    
+    // Szukamy wszystkich linków w menu głównym
+    const navLinks = document.querySelectorAll('.main-nav a');
+    
+    navLinks.forEach(link => {
+        const linkHref = link.getAttribute('href');
+        // Jeśli link w menu zgadza się z adresem strony, dodajemy mu klasę 'active'
+        if (linkHref === currentPage) {
+            link.classList.add('active');
+        }
+    });
     // --- NIEZAWODNY OBRAZEK ZASTĘPCZY ---
     const fallbackImage = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20fill%3D%22%23f8f9fa%22%20width%3D%22200%22%20height%3D%22150%22%2F%3E%3Ctext%20fill%3D%22%23adb5bd%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%3EBrak%20Zdjecia%3C%2Ftext%3E%3C%2Fsvg%3E';
 
