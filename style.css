@@ -134,6 +134,26 @@ img {
     text-transform: uppercase;
     font-size: 14px;
     color: var(--text-main);
+    position: relative; /* Wymagane do animacji paska */
+    padding-bottom: 5px; /* Odstęp paska od tekstu */
+    text-decoration: none;
+}
+
+/* Ukryty zielony pasek na start (szerokość 0) */
+.main-nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px; /* Grubość paska */
+    bottom: 0;
+    left: 0;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease; /* Płynność animacji */
+}
+
+/* Po najechaniu myszką (hover) pasek rozszerza się do 100% */
+.main-nav a:hover::after {
+    width: 100%;
 }
 
 .header-icons {
