@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. ZAKŁADKI (TABS) I MINIATURKI ZDJĘĆ NA KARCIE PRODUKTU
+    // 1. ZAKŁADKI (TABS) I MINIATURKI
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     if (tabBtns.length > 0) {
@@ -22,95 +22,142 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. ŁADOWANIE PRODUKTÓW Z JSON (TYLKO NA STRONIE SKLEPU)
+    // 2. GŁÓWNY SYSTEM SKLEPU (Ładowanie, Filtry, Paginacja)
     const shopGrid = document.querySelector('.shop-layout .products-grid');
+    
+    let allProducts = []; // Baza wszystkich produktów z JSON
+    let filteredProducts = []; // Produkty po użyciu filtra/lupy
+    let currentPage = 1;
+    const itemsPerPage = 12; // Ile produktów na jednej stronie
 
     if (shopGrid) {
+        // Jesteśmy na stronie sklepu - ładujemy JSON
         fetch('plik.json')
             .then(response => response.json())
             .then(products => {
-                renderProducts(products, shopGrid);
-                initFiltersAndSearch(); 
+                allProducts = products;
+                filteredProducts = products;
+                initFiltersAndSearch();
+                renderPage(1); // Załaduj pierwszą stronę
             })
             .catch(error => console.error('Błąd ładowania pliku JSON:', error));
     } else {
-        // Jesteśmy na innej stronie, uruchom obsługę globalnej lupy
-        initFiltersAndSearch();
+        // Jesteśmy na innej stronie - obsługujemy tylko globalną lupę (Enter)
+        initGlobalSearch();
     }
 
-    // Funkcja budująca HTML na podstawie danych
-    function renderProducts(products, grid) {
-        grid.innerHTML = ''; 
-        products.forEach(product => {
+    // --- FUNKCJA RYSOWANIA STRONY ---
+    function renderPage(page) {
+        currentPage = page;
+        shopGrid.innerHTML = ''; 
+        
+        // Obliczamy, które produkty pokazać
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedItems = filteredProducts.slice(start, end);
+
+        paginatedItems.forEach(product => {
+            // Zabezpieczenie przed mruganiem: this.onerror=null blokuje pętlę!
             const html = `
                 <a href="produkt.html?sku=${product.sku}" class="product-card" data-brand="${product.brand.toLowerCase()}">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200x150?text=Brak+Zdj%C4%99cia'">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x150?text=Brak+Zdjecia';">
                     <p class="product-sku">${product.sku}</p>
                     <h3 class="product-name">${product.name}</h3>
                 </a>
             `;
-            grid.insertAdjacentHTML('beforeend', html);
+            shopGrid.insertAdjacentHTML('beforeend', html);
         });
+
+        updatePaginationUI(); // Zaktualizuj numerki na dole
+        
+        // Zaktualizuj licznik u góry "Wyświetlanie..."
+        const countDisplay = document.querySelector('.shop-top-bar p');
+        if (countDisplay) {
+            const showingEnd = Math.min(end, filteredProducts.length);
+            const showingStart = filteredProducts.length > 0 ? start + 1 : 0;
+            countDisplay.textContent = `Wyświetlanie ${showingStart}–${showingEnd} z ${filteredProducts.length} wyników`;
+        }
     }
 
-    // 3. WYSZUKIWARKA I FILTRY MAREK
+    // --- FUNKCJA GENEROWANIA NUMERÓW STRON (PAGINACJA) ---
+    function updatePaginationUI() {
+        let paginationContainer = document.querySelector('.pagination');
+        
+        // Jeśli nie ma kontenera na stronie, nie rób nic
+        if (!paginationContainer) return;
+        
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+        // Ukryj paginację, jeśli jest tylko 1 strona wyników
+        if (totalPages <= 1) return; 
+
+        for (let i = 1; i <= totalPages; i++) {
+            const span = document.createElement('span');
+            span.className = `page-num ${i === currentPage ? 'active' : ''}`;
+            span.textContent = i;
+            
+            // Obsługa kliknięcia w stronę
+            span.addEventListener('click', () => {
+                renderPage(i);
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Przewiń na górę po kliknięciu
+            });
+            
+            paginationContainer.appendChild(span);
+        }
+    }
+
+    // --- FUNKCJA OBSŁUGI FILTRÓW I LUPY ---
     function initFiltersAndSearch() {
         const searchInput = document.getElementById('searchInput');
-        const productCards = document.querySelectorAll('.product-card');
         const checkboxes = document.querySelectorAll('.filter-list input[type="checkbox"]');
         const filterBtn = document.querySelector('.sidebar .btn');
 
-        // Odczytanie wyszukiwania z linku (jeśli klient przeszedł z innej strony)
+        // Sprawdź czy ktoś przyleciał z innej strony z parametrem ?szukaj=
         const urlParams = new URLSearchParams(window.location.search);
         const searchQuery = urlParams.get('szukaj');
-        
         if (searchQuery && searchInput) {
-            searchInput.value = searchQuery; // Wpisz to, co klient szukał do paska
+            searchInput.value = searchQuery;
         }
 
         function applyFilters() {
             const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            
             const activeBrands = Array.from(checkboxes)
                 .filter(box => box.checked)
                 .map(box => box.nextElementSibling.textContent.toLowerCase());
 
-            productCards.forEach(card => {
-                const name = card.querySelector('.product-name').textContent.toLowerCase();
-                const sku = card.querySelector('.product-sku').textContent.toLowerCase();
-                const brand = card.getAttribute('data-brand') || '';
+            // Filtrujemy bazę wszystkich produktów
+            filteredProducts = allProducts.filter(product => {
+                const name = product.name.toLowerCase();
+                const sku = product.sku.toLowerCase();
+                const brand = product.brand.toLowerCase();
 
                 const matchesSearch = name.includes(searchTerm) || sku.includes(searchTerm);
                 const matchesBrand = activeBrands.length === 0 || activeBrands.includes(brand) || activeBrands.some(b => name.includes(b));
 
-                if (matchesSearch && matchesBrand) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
+                return matchesSearch && matchesBrand;
             });
+
+            renderPage(1); // Po użyciu filtra zawsze wracamy na 1 stronę!
         }
 
-        // Filtrowanie na żywo na stronie sklepu
-        if (searchInput && productCards.length > 0) {
-            searchInput.addEventListener('input', applyFilters);
-            applyFilters(); // Uruchom raz od razu (ważne dla parametru z URL)
-        }
+        // Nasłuchiwanie na wpisywanie z klawiatury
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+        if (filterBtn) filterBtn.addEventListener('click', applyFilters);
+        
+        // Odpal raz na start (żeby odczytać parametr szukaj= z linku)
+        if (searchQuery) applyFilters();
+    }
 
-        // Przekierowanie z innej strony do sklepu po wciśnięciu Enter
+    // --- WYSZUKIWARKA GLOBALNA (Na stronie O Nas / Kontakt) ---
+    function initGlobalSearch() {
+        const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    const isShopPage = window.location.pathname.includes('sklep.html');
-                    if (!isShopPage) {
-                        // Przenieś do sklepu z parametrem szukaj=...
-                        window.location.href = `sklep.html?szukaj=${encodeURIComponent(searchInput.value)}`;
-                    }
+                    window.location.href = `sklep.html?szukaj=${encodeURIComponent(searchInput.value)}`;
                 }
             });
         }
-
-        // Filtrowanie po kliknięciu buttona "Filtr"
-        if (filterBtn) filterBtn.addEventListener('click', applyFilters);
     }
 });
