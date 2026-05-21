@@ -191,72 +191,40 @@ footer ul {
 
 /* INDEX: HERO SECTION */
 .hero {
-    background-color: var(--bg-dark);
+    background-color: #353942;
     color: var(--bg-white);
-    padding: 60px 0;
-}
-
-.hero .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.hero-content {
-    flex: 1;
-    max-width: 50%;
-}
-
-.hero-content h1 {
-    font-size: 48px;
-    line-height: 1.2;
-    margin-bottom: 30px;
-}
-
-.hero-image {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.hero-image img {
-    max-width: 90%;
-}
-
-/* INDEX: HERO SECTION */
-.hero {
-    background-color: #353942; /* Głęboki, granatowo-szary bazowy z grafiki */
-    color: var(--bg-white);
-    padding: 100px 0; /* Zwiększony padding dla odpowiednich proporcji fal */
+    padding: 50px 0; /* Zmniejszona wysokość całego diva */
     position: relative;
     overflow: hidden;
     z-index: 1;
+    display: flex;
+    align-items: center;
 }
 
-/* Lewa, główna zielona fala oddzielająca tekst od grafiki */
+/* Lewa zielona fala */
 .hero::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 45%; /* Środek z przesunięciem w lewo */
+    left: 20%;
     transform: translate(-50%, -50%);
-    width: 120vw;
-    height: 160vw; /* Bardzo duży pionowy owal tworzący łagodny łuk */
+    width: 150vw;
+    height: 150vw;
     background-color: var(--primary-color);
     border-radius: 50%;
     z-index: -4;
 }
 
-/* Ciemnoszara fala wchodząca na zieloną (odsłania tylko jej lewy brzeg) */
+/* Lewa ciemna fala przykrywająca zieloną */
 .hero::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: 50%; /* Przesunięcie w prawo względem zielonej fali */
+    left: 30%;
     transform: translate(-50%, -50%);
-    width: 120vw;
-    height: 160vw;
-    background-color: #2b3038; /* Odcień niemal czarny z pierwszego zdjęcia */
+    width: 150vw;
+    height: 150vw;
+    background-color: #2b3038;
     border-radius: 50%;
     z-index: -3;
 }
@@ -266,7 +234,8 @@ footer ul {
     align-items: center;
     justify-content: space-between;
     position: relative;
-    z-index: 10; /* Gwarantuje, że zawartość jest nad falami */
+    z-index: 10;
+    width: 100%;
 }
 
 .hero-content {
@@ -275,15 +244,14 @@ footer ul {
 }
 
 .hero-content h1 {
-    font-size: 56px; /* Powiększone, cięższe litery wg wzoru */
+    font-size: 42px; /* Zmniejszony napis */
     line-height: 1.1;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     text-transform: uppercase;
     font-weight: 900;
     letter-spacing: -1px;
 }
 
-/* Kontener obrazka tworzy nowy kontekst stosu dla białego i prawego łuku */
 .hero-image {
     flex: 1;
     display: flex;
@@ -293,65 +261,92 @@ footer ul {
     z-index: 2;
 }
 
-/* Biały owal za traktorem */
+/* Białe koło za traktorem */
 .hero-image::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 55%; 
+    left: 48%; /* Przesunięcie lekko w lewo */
     transform: translate(-50%, -50%);
-    width: 140%; /* Szerokość proporcjonalna do kontenera zdjęcia */
-    padding-bottom: 140%; /* Trik CSS na zachowanie idealnego okręgu */
+    width: 95%; /* Mniejsze koło */
+    padding-bottom: 95%;
     background-color: #ffffff;
     border-radius: 50%;
     z-index: -1;
 }
 
-/* Skrajny, prawy zielony rogalik wystający zza białego tła */
+/* Zielony łuk po prawej stronie */
 .hero-image::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: 60%; /* Mocniejsze przesunięcie w prawo obok białego */
+    left: 55%;
     transform: translate(-50%, -50%);
-    width: 140%;
-    padding-bottom: 140%;
+    width: 95%;
+    padding-bottom: 95%;
     background-color: var(--primary-color);
     border-radius: 50%;
     z-index: -2;
 }
 
 .hero-image img {
-    max-width: 110%; /* Skalowanie ciągnika, by mocniej dominował w okręgu */
+    max-width: 90%; /* Zmniejszony traktor */
     height: auto;
     position: relative;
     z-index: 5;
-    transform: scale(1.1);
-    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.4)); /* Cień potęgujący głębię na białym tle */
+    filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.4));
 }
 
-/* Responsywność dla nowego układu */
+/* INDEX: FEATURES */
+.features {
+    padding: 30px 0;
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.features .container {
+    display: flex !important; /* Wymuszenie ikon obok siebie */
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 60px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feature-item i {
+    font-size: 32px;
+    color: var(--text-main);
+}
+
+.feature-item h3 {
+    font-size: 16px;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+.feature-item p {
+    font-size: 13px;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* POPRAWKI RWD (Responsywność) */
 @media (max-width: 992px) {
-    .hero {
-        padding: 60px 0;
+    .hero { padding: 40px 0; }
+    .hero .container { flex-direction: column; }
+    .hero-content { max-width: 100%; text-align: center; margin-bottom: 40px; }
+    .hero-image { width: 100%; }
+    .hero::before, .hero::after { display: none; }
+    
+    .features .container { 
+        flex-direction: column !important; /* Pionowo tylko na telefonach */
+        gap: 20px;
     }
-    .hero .container {
-        flex-direction: column;
-    }
-    .hero-content {
-        max-width: 100%;
-        text-align: center;
-        margin-bottom: 80px;
-    }
-    .hero-image {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    /* Obrócenie fal na poziome przy wąskim ekranie */
-    .hero::before { left: 50%; top: 60%; width: 200vw; height: 100vh; }
-    .hero::after { left: 50%; top: 65%; width: 200vw; height: 100vh; }
-    .hero-image::before { left: 50%; width: 120vw; padding-bottom: 120vw; }
-    .hero-image::after { display: none; } /* Redukcja detali na mobile dla czystości */
 }
 
 /* INDEX: BRANDS */
