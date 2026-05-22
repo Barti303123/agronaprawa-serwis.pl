@@ -893,3 +893,8 @@ footer ul {
 .breadcrumbs a:hover {
     text-decoration: underline;
 }
+.filter-box {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
