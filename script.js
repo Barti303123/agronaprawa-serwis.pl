@@ -185,8 +185,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderPage(1);
             }
 
-            if (searchInput) searchInput.addEventListener('input', applyFilters);
+           if (searchInput) searchInput.addEventListener('input', applyFilters);
             if (filterBtn) filterBtn.addEventListener('click', applyFilters);
+
+            // Przycisk wyczyść filtry
+            const clearBtn = document.getElementById('clearFilters');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    checkboxes.forEach(box => box.checked = false);
+                    if (searchInput) searchInput.value = '';
+                    filteredProducts = allProducts;
+                    renderPage(1);
+                });
+            }
+
             if (searchQuery || categoryQuery) applyFilters();
         }
     }
