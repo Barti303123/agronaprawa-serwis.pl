@@ -182,6 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const matchesCategory = activeCategories.length === 0 || activeCategories.includes(category);
                     return matchesSearch && matchesCategory;
                 });
+                // --- EFEKT ŁADOWANIA ---
+                shopGrid.classList.add('is-loading'); // Ściemnia siatkę
+                
+                setTimeout(() => {
+                    renderPage(1);
+                    shopGrid.classList.remove('is-loading'); // Rozjaśnia z nowymi wynikami
+                }, 300); // 300ms "myślenia"
+            }
                 renderPage(1);
             }
 

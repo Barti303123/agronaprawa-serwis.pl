@@ -182,6 +182,12 @@ img {
 
 /* Poprawka dla RWD */
 @media (max-width: 768px) {
+    /* Dodaj to W ŚRODKU @media (max-width: 768px) */
+    .logo-container img {
+        height: auto;
+        max-height: 80px; /* Logo ładnie się skurczy na telefonie */
+        margin: 0 auto; /* Wyśrodkowanie */
+    }
     .header-top {
         flex-direction: column;
         gap: 20px;
@@ -420,7 +426,17 @@ footer ul {
     gap: 20px;
     margin-bottom: 40px;
 }
+/* ==========================================
+   EFEKT ŁADOWANIA PRZY FILTROWANIU
+   ========================================== */
+.products-grid {
+    transition: opacity 0.25s ease;
+}
 
+.products-grid.is-loading {
+    opacity: 0.3;
+    pointer-events: none; /* Blokuje klikanie w trakcie ładowania */
+}
 .product-card {
     background-color: var(--bg-white);
     border: 1px solid var(--border-color);
@@ -897,4 +913,37 @@ footer ul {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
+}
+/* ==========================================
+   PŁYWAJĄCA SŁUCHAWKA (KONWERSJA MOBILNA)
+   ========================================== */
+.floating-phone {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    box-shadow: 0 4px 15px rgba(46, 139, 87, 0.4);
+    z-index: 1000;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.floating-phone:hover {
+    background-color: #246d44;
+    color: var(--bg-white);
+    transform: scale(1.05);
+}
+
+/* Ukrycie przycisku na dużych ekranach (powyżej 768px) */
+@media (min-width: 769px) {
+    .floating-phone {
+        display: none;
+    }
 }
