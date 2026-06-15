@@ -90,15 +90,16 @@
 
             <div class="product-contact-form">
                 <p style="margin-bottom: 15px; font-size: 14px;">Proszę wpisać nazwę produktu i ewentualne pytania</p>
-                <form>
+                <form action="https://formspree.io/f/xgobdnzz" method="POST">
+                    <input type="hidden" name="_subject" value="Zapytanie o produkt">
                     <div class="form-group">
-                        <input type="text" placeholder="Imię i nazwisko *" required>
+                        <input type="text" name="Imię i nazwisko" placeholder="Imię i nazwisko *" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" placeholder="Adres e-mail *" required>
+                        <input type="email" name="email" placeholder="Adres e-mail *" required>
                     </div>
                     <div class="form-group">
-                        <textarea placeholder="Twoja wiadomość..." required></textarea>
+                        <textarea name="Wiadomość" placeholder="Twoja wiadomość..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-outline">Prześlij</button>
                 </form>
