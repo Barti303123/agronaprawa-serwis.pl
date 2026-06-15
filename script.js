@@ -294,4 +294,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     }
+
+    // ==========================================
+    // 6. OBSŁUGA FORMULARZY FORMSPREE (AJAX)
+    // ==========================================
+    const forms = document.querySelectorAll('form[action^="https://formspree.io"]');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnText = btn.textContent;
+            btn.textContent = 'Wysyłanie...';
+            btn.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert('Dziękujemy za wiadomość! Odpowiemy najszybciej jak to możliwe.');
+                    form.reset();
+                } else {
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            alert(data["errors"].map(error => error["message"]).join(", "));
+                        } else {
+                            alert('Wystąpił problem z wysłaniem wiadomości. Spróbuj ponownie później.');
+                        }
+                    });
+                }
+            }).catch(error => {
+                alert('Wystąpił błąd. Sprawdź połączenie internetowe.');
+            }).finally(() => {
+                btn.textContent = originalBtnText;
+                btn.disabled = false;
+            });
+        });
+    });
 });
