@@ -31,6 +31,11 @@ export default {
       title: 'Cena',
     },
     {
+      name: 'description',
+      type: 'text',
+      title: 'Opis produktu',
+    },
+    {
       name: 'image',
       type: 'image',
       title: 'Zdjęcie',

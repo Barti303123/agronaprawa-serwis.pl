@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 0. POBIERANIE DANYCH Z SANITY
     // ==========================================
-    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, price, "image": image.asset->url}');
+    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, price, description, "image": image.asset->url}');
     const sanityUrl = `https://py9o7u56.api.sanity.io/v2022-03-07/data/query/production?query=${sanityQuery}`;
     
     function fetchProducts() {
@@ -259,6 +259,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const thumbnailsContainer = document.querySelector('.thumbnails');
                         if (thumbnailsContainer) thumbnailsContainer.style.display = 'none';
+
+                        const opisContainer = document.getElementById('opis');
+                        if (opisContainer) {
+                            if (product.description) {
+                                opisContainer.innerHTML = `<p>${product.description.replace(/\\n/g, '<br>')}</p>`;
+                            } else {
+                                opisContainer.innerHTML = `<p>Brak opisu dla tego produktu.</p>`;
+                            }
+                        }
 
                         // SEO: aktualizacja title strony
                         document.title = `${product.sku} ${product.name} - ${product.category} | AGRONAPRAWA`;
