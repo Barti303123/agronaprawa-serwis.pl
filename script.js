@@ -2,13 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 0. POBIERANIE DANYCH Z SANITY
     // ==========================================
-    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, price, description, "image": image.asset->url}');
+    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, "brandRef": brandRef->name, "categoryRef": categoryRef->name, price, description, "image": image.asset->url}');
     const sanityUrl = `https://py9o7u56.api.sanity.io/v2022-03-07/data/query/production?query=${sanityQuery}`;
     
     function fetchProducts() {
         return fetch(sanityUrl)
             .then(res => res.json())
-            .then(data => data.result || []);
+            .then(data => {
+                const products = data.result || [];
+                return products.map(p => ({
+                    ...p,
+                    category: (p.categoryRef || p.category || "Inne"),
+                    brand: (p.brandRef || p.brand || "Inne")
+                }));
+            });
     }
 
     // ==========================================
@@ -158,6 +165,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function initShopFilters() {
+            // Dynamically generate sidebars
+            const filterBoxes = document.querySelectorAll('.sidebar .filter-list');
+            if (filterBoxes.length >= 2) {
+                const brandsList = filterBoxes[0];
+                const categoriesList = filterBoxes[1];
+                
+                const uniqueBrands = [...new Set(allProducts.map(p => p.brand))].filter(Boolean).sort();
+                const uniqueCategories = [...new Set(allProducts.map(p => p.category))].filter(Boolean).sort();
+                
+                brandsList.innerHTML = uniqueBrands.map(brand => {
+                    const id = 'brand-' + brand.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${brand}</label></li>`;
+                }).join('');
+                
+                categoriesList.innerHTML = uniqueCategories.map(cat => {
+                    const id = 'cat-' + cat.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${cat}</label></li>`;
+                }).join('');
+            }
+
             const checkboxes = document.querySelectorAll('.filter-list input[type="checkbox"]');
             const filterBtn = document.querySelector('.sidebar .btn');
             const urlParams = new URLSearchParams(window.location.search);
@@ -175,21 +202,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // ---- KLUCZOWA ZMIANA: filtrowanie po product.category ----
+            // ---- KLUCZOWA ZMIANA: filtrowanie po product.category i brand ----
             function applyFilters() {
                 const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-                const activeCategories = Array.from(checkboxes)
-                    .filter(box => box.checked)
-                    .map(box => box.nextElementSibling.textContent.toLowerCase());
+                
+                let activeBrands = [];
+                let activeCategories = [];
+                
+                if (filterBoxes.length >= 2) {
+                    activeBrands = Array.from(filterBoxes[0].querySelectorAll('input[type="checkbox"]'))
+                        .filter(box => box.checked)
+                        .map(box => box.nextElementSibling.textContent.toLowerCase());
+                    activeCategories = Array.from(filterBoxes[1].querySelectorAll('input[type="checkbox"]'))
+                        .filter(box => box.checked)
+                        .map(box => box.nextElementSibling.textContent.toLowerCase());
+                }
 
                 filteredProducts = allProducts.filter(product => {
                     const name = product.name.toLowerCase();
                     const sku = product.sku.toLowerCase();
                     const category = product.category.toLowerCase();
+                    const brand = product.brand.toLowerCase();
 
                     const matchesSearch = name.includes(searchTerm) || sku.includes(searchTerm);
                     const matchesCategory = activeCategories.length === 0 || activeCategories.includes(category);
-                    return matchesSearch && matchesCategory;
+                    const matchesBrand = activeBrands.length === 0 || activeBrands.includes(brand);
+                    
+                    return matchesSearch && matchesCategory && matchesBrand;
                 });
                 
                 // --- EFEKT ŁADOWANIA ---
