@@ -2,14 +2,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 0. POBIERANIE DANYCH Z SANITY
     // ==========================================
-    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, "brandRef": brandRef->name, "categoryRef": categoryRef->name, price, description, "image": image.asset->url}');
+    const sanityQuery = encodeURIComponent(`{
+      "products": *[_type == "product"]{sku, name, brand, category, "brandRef": brandRef->name, "categoryRef": categoryRef->name, price, description, "image": image.asset->url},
+      "brands": *[_type == "brand"].name,
+      "categories": *[_type == "category"].name
+    }`);
     const sanityUrl = `https://py9o7u56.api.sanity.io/v2022-03-07/data/query/production?query=${sanityQuery}`;
     
+    let sanityBrands = [];
+    let sanityCategories = [];
+
     function fetchProducts() {
         return fetch(sanityUrl)
             .then(res => res.json())
             .then(data => {
-                const products = data.result || [];
+                const result = data.result || {};
+                sanityBrands = result.brands || [];
+                sanityCategories = result.categories || [];
+                const products = result.products || [];
                 return products.map(p => ({
                     ...p,
                     category: (p.categoryRef || p.category || "Inne"),
@@ -174,10 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const baseBrands = ["CASE IH", "CLAAS", "FENDT", "FIAT", "HÜRLIMANN", "JOHN DEERE", "LAMBORGHINI", "MASSEY FERGUSON", "MCCORMICK", "NEW HOLLAND", "RENAULT", "SAME", "VALTRA", "ZETOR"];
                 const baseCategories = ["Uszczelki i O-ringi", "Łożyska", "Filtry", "Półosie i Piasty", "Elementy Hamulcowe", "Przekładnie i Biegi", "Podkładki", "Pompy", "Układ Kierowniczy", "Zawieszenie", "Napęd", "Śruby i Nakrętki", "Inne"];
 
-                const uniqueBrands = [...new Set([...baseBrands.map(b=>b.toUpperCase()), ...allProducts.map(p => p.brand.toUpperCase())])].filter(Boolean);
+                const uniqueBrands = [...new Set(sanityBrands.map(b => b.toUpperCase()))].filter(Boolean);
                 uniqueBrands.sort((a, b) => a.localeCompare(b));
 
-                const uniqueCategories = [...new Set([...baseCategories, ...allProducts.map(p => p.category)])].filter(Boolean);
+                const uniqueCategories = [...new Set(sanityCategories)].filter(Boolean);
                 uniqueCategories.sort((a, b) => {
                     const idxA = baseCategories.indexOf(a);
                     const idxB = baseCategories.indexOf(b);
