@@ -1,6 +1,12 @@
-import {getCliClient} from 'sanity/cli'
+import { createClient } from '@sanity/client'
 
-const client = getCliClient()
+const client = createClient({
+  projectId: 'py9o7u56',
+  dataset: 'production',
+  useCdn: false,
+  apiVersion: '2022-03-07',
+  token: process.env.SANITY_API_TOKEN
+})
 
 const migrate = async () => {
   const products = await client.fetch(`*[_type == "product"]`)
@@ -67,10 +73,10 @@ const migrate = async () => {
     if ((brandId && typeof product.brand === 'string') || (categoryId && typeof product.category === 'string')) {
       const patch = client.patch(product._id)
       if (brandId && typeof product.brand === 'string') {
-        patch.set({brand: {_type: 'reference', _ref: brandId}})
+        patch.set({brandRef: {_type: 'reference', _ref: brandId}})
       }
       if (categoryId && typeof product.category === 'string') {
-        patch.set({category: {_type: 'reference', _ref: categoryId}})
+        patch.set({categoryRef: {_type: 'reference', _ref: categoryId}})
       }
       await patch.commit()
       console.log(`Patched product ${product._id} (${product.sku})`)

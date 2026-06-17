@@ -171,12 +171,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const brandsList = filterBoxes[0];
                 const categoriesList = filterBoxes[1];
                 
-                const uniqueBrands = [...new Set(allProducts.map(p => p.brand))].filter(Boolean).sort();
-                const uniqueCategories = [...new Set(allProducts.map(p => p.category))].filter(Boolean).sort();
+                const baseBrands = ["CASE IH", "CLAAS", "FENDT", "FIAT", "HÜRLIMANN", "JOHN DEERE", "LAMBORGHINI", "MASSEY FERGUSON", "MCCORMICK", "NEW HOLLAND", "RENAULT", "SAME", "VALTRA", "ZETOR"];
+                const baseCategories = ["Uszczelki i O-ringi", "Łożyska", "Filtry", "Półosie i Piasty", "Elementy Hamulcowe", "Przekładnie i Biegi", "Podkładki", "Pompy", "Układ Kierowniczy", "Zawieszenie", "Napęd", "Śruby i Nakrętki", "Inne"];
+
+                const uniqueBrands = [...new Set([...baseBrands.map(b=>b.toUpperCase()), ...allProducts.map(p => p.brand.toUpperCase())])].filter(Boolean);
+                uniqueBrands.sort((a, b) => a.localeCompare(b));
+
+                const uniqueCategories = [...new Set([...baseCategories, ...allProducts.map(p => p.category)])].filter(Boolean);
+                uniqueCategories.sort((a, b) => {
+                    const idxA = baseCategories.indexOf(a);
+                    const idxB = baseCategories.indexOf(b);
+                    if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+                    if (idxA === -1) return 1;
+                    if (idxB === -1) return -1;
+                    return idxA - idxB;
+                });
                 
                 brandsList.innerHTML = uniqueBrands.map(brand => {
                     const id = 'brand-' + brand.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${brand.toUpperCase()}</label></li>`;
+                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${brand}</label></li>`;
                 }).join('');
                 
                 categoriesList.innerHTML = uniqueCategories.map(cat => {
