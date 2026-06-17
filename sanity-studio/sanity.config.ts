@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {plPLLocale} from '@sanity/locale-pl-pl'
 import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
@@ -12,7 +13,7 @@ export default defineConfig({
 
   basePath: '/studio',
 
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool(), visionTool(), plPLLocale()],
 
   schema: {
     types: schemaTypes,
