@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 brandsList.innerHTML = uniqueBrands.map(brand => {
                     const id = 'brand-' + brand.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${brand}</label></li>`;
+                    return `<li><input type="checkbox" id="${id}"><label for="${id}">${brand.toUpperCase()}</label></li>`;
                 }).join('');
                 
                 categoriesList.innerHTML = uniqueCategories.map(cat => {
