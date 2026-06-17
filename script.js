@@ -406,8 +406,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 6. OBSŁUGA FORMULARZY FORMSPREE (AJAX)
+    // 6. OBSŁUGA FORMULARZY FORMSPREE (AJAX) + TOASTY
     // ==========================================
+    
+    // Tworzenie kontenera na toasty, jeśli nie istnieje
+    if (!document.getElementById('toast-container')) {
+        const toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+
+    function showToast(message, isError = false) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : ''}`;
+        toast.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
     const forms = document.querySelectorAll('form[action^="https://formspree.io"]');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -426,19 +449,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }).then(response => {
                 if (response.ok) {
-                    alert('Dziękujemy za wiadomość! Odpowiemy najszybciej jak to możliwe.');
+                    showToast('Dziękujemy za wiadomość! Odpowiemy najszybciej jak to możliwe.');
                     form.reset();
                 } else {
                     response.json().then(data => {
                         if (Object.hasOwn(data, 'errors')) {
-                            alert(data["errors"].map(error => error["message"]).join(", "));
+                            showToast(data["errors"].map(error => error["message"]).join(", "), true);
                         } else {
-                            alert('Wystąpił problem z wysłaniem wiadomości. Spróbuj ponownie później.');
+                            showToast('Wystąpił problem z wysłaniem wiadomości. Spróbuj ponownie później.', true);
                         }
                     });
                 }
             }).catch(error => {
-                alert('Wystąpił błąd. Sprawdź połączenie internetowe.');
+                showToast('Wystąpił błąd. Sprawdź połączenie internetowe.', true);
             }).finally(() => {
                 btn.textContent = originalBtnText;
                 btn.disabled = false;
