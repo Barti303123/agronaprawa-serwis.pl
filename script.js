@@ -1,6 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
-    // 0. AKTYWNY LINK W MENU
+    // 0. POBIERANIE DANYCH Z SANITY
+    // ==========================================
+    const sanityQuery = encodeURIComponent('*[_type == "product"]{sku, name, brand, category, price, "image": image.asset->url}');
+    const sanityUrl = `https://py9o7u56.api.sanity.io/v2022-03-07/data/query/production?query=${sanityQuery}`;
+    
+    function fetchProducts() {
+        return fetch(sanityUrl)
+            .then(res => res.json())
+            .then(data => data.result || []);
+    }
+
+    // ==========================================
+    // 0.1 AKTYWNY LINK W MENU
     // ==========================================
     const currentPage = window.location.pathname.split("/").pop() || 'index.html'; 
     const navLinks = document.querySelectorAll('.main-nav a');
@@ -63,8 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const homeGrid = document.getElementById('homeProductsGrid');
     if (homeGrid) {
-        fetch('plik.json')
-            .then(response => response.json())
+        fetchProducts()
             .then(products => {
                 homeGrid.innerHTML = '';
                 products.slice(0, 4).forEach(product => {
@@ -91,8 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentPage = 1;
         const itemsPerPage = 12;
 
-        fetch('plik.json')
-            .then(response => response.json())
+        fetchProducts()
             .then(products => {
                 allProducts = products;
                 filteredProducts = products;
@@ -221,8 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (rawSku) {
             const productSku = decodeURIComponent(rawSku);
-            fetch('plik.json')
-                .then(response => response.json())
+            fetchProducts()
                 .then(products => {
                     const product = products.find(p => String(p.sku) === String(productSku));
 
