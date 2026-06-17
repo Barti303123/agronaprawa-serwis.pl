@@ -52,10 +52,16 @@ export default {
     {
       name: 'image',
       type: 'image',
-      title: 'Zdjęcie',
+      title: 'Zdjęcie Główne (Miniaturka sklepu)',
       options: {
         hotspot: true,
       },
+    },
+    {
+      name: 'gallery',
+      type: 'array',
+      title: 'Galeria Dodatkowych Zdjęć',
+      of: [{ type: 'image', options: { hotspot: true } }],
     },
   ],
   preview: {

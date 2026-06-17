@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 0. POBIERANIE DANYCH Z SANITY
     // ==========================================
     const sanityQuery = encodeURIComponent(`{
-      "products": *[_type == "product"]{sku, name, brand, category, "brandRef": brandRef->name, "categoryRef": categoryRef->name, price, description, "image": image.asset->url},
+      "products": *[_type == "product"]{sku, name, brand, category, "brandRef": brandRef->name, "categoryRef": categoryRef->name, price, description, "image": image.asset->url, "gallery": gallery[].asset->url},
       "brands": *[_type == "brand"].name,
       "categories": *[_type == "category"].name
     }`);
@@ -350,7 +350,33 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         const thumbnailsContainer = document.querySelector('.thumbnails');
-                        if (thumbnailsContainer) thumbnailsContainer.style.display = 'none';
+                        if (thumbnailsContainer) {
+                            if (product.gallery && product.gallery.length > 0) {
+                                thumbnailsContainer.style.display = 'flex';
+                                thumbnailsContainer.innerHTML = '';
+                                
+                                // Dodaj też zdjęcie główne do miniaturek, żeby klient mógł do niego wrócić
+                                const allImages = [product.image, ...product.gallery].filter(Boolean);
+                                
+                                allImages.forEach((imgUrl, index) => {
+                                    const imgEl = document.createElement('img');
+                                    imgEl.src = imgUrl;
+                                    imgEl.alt = `Miniaturka ${index + 1}`;
+                                    if (index === 0) imgEl.classList.add('active'); // Oznaczamy pierwszą jako aktywną
+                                    
+                                    imgEl.addEventListener('click', function() {
+                                        if (mainImage) mainImage.src = this.src;
+                                        // Zarządzanie klasą 'active'
+                                        thumbnailsContainer.querySelectorAll('img').forEach(img => img.classList.remove('active'));
+                                        this.classList.add('active');
+                                    });
+                                    
+                                    thumbnailsContainer.appendChild(imgEl);
+                                });
+                            } else {
+                                thumbnailsContainer.style.display = 'none';
+                            }
+                        }
 
                         const opisContainer = document.getElementById('opis');
                         if (opisContainer) {
